@@ -1,4 +1,4 @@
-    use crate::token::Token;
+use crate::token::Token;
 
 struct Lexer {
     input: String,
@@ -18,7 +18,7 @@ impl Lexer {
 
         lexer.read_char();
 
-        return lexer;
+        lexer
     }
 
     fn read_char(&mut self) {
@@ -49,7 +49,7 @@ impl Lexer {
 
         self.read_char();
 
-        return token;
+        token
     }
 }
 
@@ -69,7 +69,7 @@ mod tests {
             Token::RightBrace,
             Token::Comma,
             Token::Semicolon,
-            Token::EOF,
+            Token::Eof,
         ];
 
         let mut lexer = Lexer::new(String::from("=+(){},;"));
