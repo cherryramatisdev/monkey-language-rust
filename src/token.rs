@@ -3,7 +3,8 @@ pub enum Token {
     Illegal,
     Eof,
     Identifier(String),
-    Integer(usize),
+    // NOTE: The parsing will be the job of the AST builder
+    Integer(String),
     Assign,
     Plus,
     Comma,
