@@ -117,76 +117,49 @@ mod tests {
 
     #[test]
     fn test_next_token_simple_symbols() {
-        let tests = vec![
-            Token::Assign,
-            Token::Plus,
-            Token::LeftParen,
-            Token::RightParen,
-            Token::LeftBrace,
-            Token::RightBrace,
-            Token::Comma,
-            Token::Semicolon,
-            Token::Eof,
-        ];
-
+        let mut tokens = vec![];
         let mut lexer = Lexer::new(String::from("=+(){},;"));
 
-        for test in tests {
-            let token = lexer.next_token();
+        let mut token = lexer.next_token();
 
-            assert_eq!(token, test);
+        while token != Token::Eof {
+            tokens.push(token);
+            token = lexer.next_token();
         }
+
+        insta::assert_debug_snapshot!(tokens);
     }
 
     #[test]
     fn test_next_token_keywords() {
-        let tests = vec![
-            Token::Let,
-            Token::Identifier("five".to_string()),
-            Token::Assign,
-            Token::Integer("5".to_string()),
-            Token::Semicolon,
-            Token::Let,
-            Token::Identifier("ten".to_string()),
-            Token::Assign,
-            Token::Integer("10".to_string()),
-            Token::Semicolon,
-            Token::Let,
-            Token::Identifier("add".to_string()),
-            Token::Assign,
-            Token::Function,
-            Token::LeftParen,
-            Token::Identifier("x".to_string()),
-            Token::Comma,
-            Token::Identifier("y".to_string()),
-            Token::RightParen,
-            Token::LeftBrace,
-            Token::Identifier("x".to_string()),
-            Token::Plus,
-            Token::Identifier("y".to_string()),
-            Token::Semicolon,
-            Token::RightBrace,
-            Token::Semicolon,
-            Token::Let,
-            Token::Identifier("result".to_string()),
-            Token::Assign,
-            Token::Identifier("add".to_string()),
-            Token::LeftParen,
-            Token::Identifier("five".to_string()),
-            Token::Comma,
-            Token::Identifier("ten".to_string()),
-            Token::RightParen,
-            Token::Semicolon,
-            Token::Eof,
-        ];
-
+        let mut tokens = vec![];
         let mut lexer =
             Lexer::new(std::fs::read_to_string("examples/var_functions.monkey").unwrap());
 
-        for test in tests {
-            let token = lexer.next_token();
+        let mut token = lexer.next_token();
 
-            assert_eq!(token, test);
+        while token != Token::Eof {
+            tokens.push(token);
+            token = lexer.next_token();
         }
+
+        insta::assert_debug_snapshot!(tokens);
+    }
+
+    #[test]
+    fn test_next_token_keywords_with_symbols() {
+        let mut tokens = vec![];
+        let mut lexer =
+            Lexer::new(std::fs::read_to_string("examples/var_functions_symbols.monkey").unwrap());
+
+        let mut token = lexer.next_token();
+
+        while token != Token::Eof {
+            tokens.push(token);
+            token = lexer.next_token();
+        }
+
+        insta::assert_debug_snapshot!(tokens);
+    }
     }
 }

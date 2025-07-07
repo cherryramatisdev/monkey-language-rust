@@ -1,0 +1,14 @@
+---
+source: src/lexer.rs
+expression: tokens
+---
+[
+    Assign,
+    Plus,
+    LeftParen,
+    RightParen,
+    LeftBrace,
+    RightBrace,
+    Comma,
+    Semicolon,
+]
