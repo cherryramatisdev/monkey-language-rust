@@ -66,13 +66,11 @@ impl Lexer {
     }
 
     fn skip_whitespace(&mut self) {
-        println!("whitespace -> {:?}", self.ch);
         while self.ch == Some(' ')
             || self.ch == Some('\t')
             || self.ch == Some('\n')
             || self.ch == Some('\r')
         {
-            println!("whitespace (dentro) -> {:?}", self.ch);
             self.read_char();
         }
     }
