@@ -104,6 +104,11 @@ impl Lexer {
                 match identifier.as_str() {
                     "fn" => Token::Function,
                     "let" => Token::Let,
+                    "true" => Token::True,
+                    "false" => Token::False,
+                    "if" => Token::If,
+                    "else" => Token::Else,
+                    "return" => Token::Return,
                     _ => Token::Identifier(identifier),
                 }
             }
@@ -167,5 +172,20 @@ mod tests {
 
         insta::assert_debug_snapshot!(tokens);
     }
+
+    #[test]
+    fn test_next_token_keywords_with_conditionals() {
+        let mut tokens = vec![];
+        let mut lexer =
+            Lexer::new(std::fs::read_to_string("examples/var_functions_conditionals.monkey").unwrap());
+
+        let mut token = lexer.next_token();
+
+        while token != Token::Eof {
+            tokens.push(token);
+            token = lexer.next_token();
+        }
+
+        insta::assert_debug_snapshot!(tokens);
     }
 }

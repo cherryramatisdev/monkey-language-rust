@@ -21,4 +21,9 @@ pub enum Token {
     GreaterThan,
     Function,
     Let,
+    True,
+    False,
+    If,
+    Else,
+    Return,
 }
