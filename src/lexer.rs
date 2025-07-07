@@ -87,12 +87,18 @@ impl Lexer {
         let token = match self.ch {
             Some('=') => self.consume_token(Token::Assign),
             Some('+') => self.consume_token(Token::Plus),
+            Some('-') => self.consume_token(Token::Minus),
             Some(',') => self.consume_token(Token::Comma),
+            Some('!') => self.consume_token(Token::Bang),
+            Some('*') => self.consume_token(Token::Asterisk),
+            Some('/') => self.consume_token(Token::Slash),
             Some(';') => self.consume_token(Token::Semicolon),
             Some('(') => self.consume_token(Token::LeftParen),
             Some(')') => self.consume_token(Token::RightParen),
             Some('{') => self.consume_token(Token::LeftBrace),
             Some('}') => self.consume_token(Token::RightBrace),
+            Some('<') => self.consume_token(Token::LessThan),
+            Some('>') => self.consume_token(Token::GreaterThan),
             Some('a'..='z') => {
                 let identifier = self.read_identifier();
                 match identifier.as_str() {
