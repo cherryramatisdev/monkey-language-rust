@@ -49,10 +49,10 @@ impl Lexer {
 
     fn peek_char(&mut self) -> Option<char> {
         if self.read_position >= self.input.len() {
-            return None;
+            None
         } else {
             let ch_at_pos = self.input.as_bytes()[self.read_position];
-            return std::char::from_u32(ch_at_pos as u32);
+            std::char::from_u32(ch_at_pos as u32)
         }
     }
 
