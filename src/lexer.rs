@@ -47,6 +47,15 @@ impl Lexer {
         self.input[position..self.position].to_string()
     }
 
+    fn peek_char(&mut self) -> Option<char> {
+        if self.read_position >= self.input.len() {
+            return None;
+        } else {
+            let ch_at_pos = self.input.as_bytes()[self.read_position];
+            return std::char::from_u32(ch_at_pos as u32);
+        }
+    }
+
     fn read_number(&mut self) -> String {
         let position = self.position;
 
@@ -84,12 +93,30 @@ impl Lexer {
     fn next_token(&mut self) -> Token {
         self.skip_whitespace();
 
-        let token = match self.ch {
-            Some('=') => self.consume_token(Token::Assign),
+        match self.ch {
+            Some('=') => {
+                match self.peek_char() {
+                    Some('=') => {
+                        // NOTE: We need to move two chars to catch up with the indent.
+                        self.read_char();
+                        self.consume_token(Token::Equal)
+                    },
+                    _ => self.consume_token(Token::Assign),
+                }
+            },
             Some('+') => self.consume_token(Token::Plus),
             Some('-') => self.consume_token(Token::Minus),
             Some(',') => self.consume_token(Token::Comma),
-            Some('!') => self.consume_token(Token::Bang),
+            Some('!') => {
+                match self.peek_char() {
+                    Some('=') => {
+                        // NOTE: We need to move two chars to catch up with the indent.
+                        self.read_char();
+                        self.consume_token(Token::NotEqual)
+                    }
+                    _ => self.consume_token(Token::Bang),
+                }
+            },
             Some('*') => self.consume_token(Token::Asterisk),
             Some('/') => self.consume_token(Token::Slash),
             Some(';') => self.consume_token(Token::Semicolon),
@@ -115,9 +142,7 @@ impl Lexer {
             Some('0'..='9') => Token::Integer(self.read_number()),
             Some(_) => self.consume_token(Token::Illegal),
             None => self.consume_token(Token::Eof),
-        };
-
-        token
+        }
     }
 }
 

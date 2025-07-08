@@ -26,4 +26,6 @@ pub enum Token {
     If,
     Else,
     Return,
+    Equal,
+    NotEqual,
 }

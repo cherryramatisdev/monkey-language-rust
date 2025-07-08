@@ -86,4 +86,20 @@ expression: tokens
     False,
     Semicolon,
     RightBrace,
+    Integer(
+        "10",
+    ),
+    Equal,
+    Integer(
+        "10",
+    ),
+    Semicolon,
+    Integer(
+        "10",
+    ),
+    NotEqual,
+    Integer(
+        "9",
+    ),
+    Semicolon,
 ]
