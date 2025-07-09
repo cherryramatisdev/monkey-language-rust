@@ -1,6 +1,6 @@
 use crate::token::Token;
 
-struct Lexer {
+pub struct Lexer {
     input: String,
     position: usize,
     read_position: usize,
@@ -8,7 +8,7 @@ struct Lexer {
 }
 
 impl Lexer {
-    fn new(input: String) -> Self {
+    pub fn new(input: String) -> Self {
         let mut lexer = Self {
             input,
             position: 0,
@@ -90,7 +90,7 @@ impl Lexer {
         token
     }
 
-    fn next_token(&mut self) -> Token {
+    pub fn next_token(&mut self) -> Token {
         self.skip_whitespace();
 
         match self.ch {
@@ -100,10 +100,10 @@ impl Lexer {
                         // NOTE: We need to move two chars to catch up with the indent.
                         self.read_char();
                         self.consume_token(Token::Equal)
-                    },
+                    }
                     _ => self.consume_token(Token::Assign),
                 }
-            },
+            }
             Some('+') => self.consume_token(Token::Plus),
             Some('-') => self.consume_token(Token::Minus),
             Some(',') => self.consume_token(Token::Comma),
@@ -116,7 +116,7 @@ impl Lexer {
                     }
                     _ => self.consume_token(Token::Bang),
                 }
-            },
+            }
             Some('*') => self.consume_token(Token::Asterisk),
             Some('/') => self.consume_token(Token::Slash),
             Some(';') => self.consume_token(Token::Semicolon),
@@ -201,8 +201,9 @@ mod tests {
     #[test]
     fn test_next_token_keywords_with_conditionals() {
         let mut tokens = vec![];
-        let mut lexer =
-            Lexer::new(std::fs::read_to_string("examples/var_functions_conditionals.monkey").unwrap());
+        let mut lexer = Lexer::new(
+            std::fs::read_to_string("examples/var_functions_conditionals.monkey").unwrap(),
+        );
 
         let mut token = lexer.next_token();
 
