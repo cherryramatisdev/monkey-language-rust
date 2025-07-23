@@ -36,9 +36,13 @@ impl Parser {
     fn parse_let_statement(&mut self) -> Option<ast::Node> {
         let statement = ast::Node::LetStatement(self.cur_token.clone()?);
 
-        dbg!(self.expect_peek(token::Token::Identifier("let".to_string())));
+        let Some(token::Token::Identifier(name)) = &self.peek_token else {
+            return None;
+        };
+        let identifier_name = name.clone();
+        self.next_token();
 
-        if !self.expect_peek(token::Token::Identifier("let".to_string())) || !self.expect_peek(token::Token::Assign) {
+        if !self.expect_peek(token::Token::Assign) {
             return None;
         }
 
