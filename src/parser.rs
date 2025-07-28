@@ -10,7 +10,11 @@ pub struct Parser {
 
 impl Parser {
     fn new(lexer: lexer::Lexer) -> Self {
-        let mut parser = Self { lexer, cur_token: None, peek_token: None };
+        let mut parser = Self {
+            lexer,
+            cur_token: None,
+            peek_token: None,
+        };
 
         parser.next_token();
         parser.next_token();
@@ -24,7 +28,6 @@ impl Parser {
     }
 
     fn expect_peek(&mut self, token: token::Token) -> bool {
-        dbg!(&self.peek_token);
         if self.peek_token == Some(token) {
             self.next_token();
             true
@@ -34,17 +37,18 @@ impl Parser {
     }
 
     fn parse_let_statement(&mut self) -> Option<ast::Node> {
-        let statement = ast::Node::LetStatement(self.cur_token.clone()?);
-
-        let Some(token::Token::Identifier(name)) = &self.peek_token else {
-            return None;
+        match &self.peek_token {
+            Some(token::Token::Identifier(_)) => self.next_token(),
+            _ => return None,
         };
-        let identifier_name = name.clone();
-        self.next_token();
 
-        if !self.expect_peek(token::Token::Assign) {
-            return None;
-        }
+        let statement = ast::Node::LetStatement(self.cur_token.clone());
+
+        match self.peek_token {
+            Some(token::Token::Assign) => self.next_token(),
+            _ => return None,
+        };
+
 
         while self.cur_token != Some(token::Token::Semicolon) {
             self.next_token();
@@ -56,17 +60,15 @@ impl Parser {
     fn parse_statement(&mut self) -> Option<ast::Node> {
         match self.cur_token {
             Some(token::Token::Let) => self.parse_let_statement(),
-            _ => None
+            _ => None,
         }
     }
 
     fn parse_program(&mut self) -> Option<ast::Program> {
-        let mut program = ast::Program{ nodes: vec![] };
+        let mut program = ast::Program { nodes: vec![] };
 
         while self.cur_token != Some(token::Token::Eof) {
             let node = self.parse_statement();
-
-            dbg!(&node);
 
             if let Some(n) = node {
                 program.nodes.push(n);
@@ -99,20 +101,16 @@ mod tests {
         let program = parser.parse_program();
 
         assert!(program.is_some());
-        // assert_eq!(program.as_ref().map(|p| p.nodes.len()), Some(3));
+        assert_eq!(program.as_ref().map(|p| p.nodes.len()), Some(3));
 
-        let expected_identifiers = ["x", "y", "foobar"];
-
-        dbg!(&program.clone().unwrap().nodes);
-
-        for (i, identifier) in expected_identifiers.iter().enumerate() {
+        for (i, identifier) in ["x", "y", "foobar"].iter().enumerate() {
             if let Some(ref p) = program {
                 let node = &p.nodes[i];
 
-                // let ast::Statement::Let(LetStatement { token, .. }) = statement;
-                // assert_eq!(token.to_string(), **identifier);
-                dbg!(node);
-                dbg!(identifier);
+                assert_eq!(
+                    node,
+                    &ast::Node::LetStatement(Some(token::Token::Identifier(identifier.to_string())))
+                );
             }
         }
     }
