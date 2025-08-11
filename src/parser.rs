@@ -2,8 +2,18 @@ use crate::ast;
 use crate::lexer;
 use crate::token;
 
+struct WrongToken {
+    expected: token::Token,
+    got: token::Token,
+}
+
+enum ParserError {
+    WrongToken(WrongToken),
+}
+
 pub struct Parser {
     lexer: lexer::Lexer,
+    errors: Vec<ParserError>,
     cur_token: Option<token::Token>,
     peek_token: Option<token::Token>,
 }
@@ -14,6 +24,7 @@ impl Parser {
             lexer,
             cur_token: None,
             peek_token: None,
+            errors: Vec::new(),
         };
 
         parser.next_token();
@@ -27,28 +38,32 @@ impl Parser {
         self.peek_token = Some(self.lexer.next_token());
     }
 
-    fn expect_peek(&mut self, token: token::Token) -> bool {
-        if self.peek_token == Some(token) {
-            self.next_token();
-            true
-        } else {
-            false
-        }
-    }
-
     fn parse_let_statement(&mut self) -> Option<ast::Node> {
         match &self.peek_token {
             Some(token::Token::Identifier(_)) => self.next_token(),
-            _ => return None,
+            token => {
+                // TODO: how to deal with this unwrap better?
+                self.errors.push(ParserError::WrongToken(WrongToken {
+                    expected: token::Token::Identifier("".to_string()),
+                    got: token.clone().unwrap(),
+                }));
+                return None;
+            }
         };
 
         let statement = ast::Node::LetStatement(self.cur_token.clone());
 
-        match self.peek_token {
+        match &self.peek_token {
             Some(token::Token::Assign) => self.next_token(),
-            _ => return None,
+            token => {
+                // TODO: how to deal with this unwrap better?
+                self.errors.push(ParserError::WrongToken(WrongToken {
+                    expected: token::Token::Identifier("".to_string()),
+                    got: token.clone().unwrap(),
+                }));
+                return None;
+            }
         };
-
 
         while self.cur_token != Some(token::Token::Semicolon) {
             self.next_token();
@@ -100,6 +115,8 @@ mod tests {
 
         let program = parser.parse_program();
 
+        assert_eq!(parser.errors.len(), 0);
+
         assert!(program.is_some());
         assert_eq!(program.as_ref().map(|p| p.nodes.len()), Some(3));
 
@@ -109,7 +126,9 @@ mod tests {
 
                 assert_eq!(
                     node,
-                    &ast::Node::LetStatement(Some(token::Token::Identifier(identifier.to_string())))
+                    &ast::Node::LetStatement(Some(token::Token::Identifier(
+                        identifier.to_string()
+                    )))
                 );
             }
         }

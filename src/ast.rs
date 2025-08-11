@@ -9,5 +9,5 @@ pub enum Node {
 
 #[derive(Debug, Clone)]
 pub struct Program {
-    pub nodes: Vec<Node>
+    pub nodes: Vec<Node>,
 }
